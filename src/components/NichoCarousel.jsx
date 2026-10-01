@@ -36,8 +36,8 @@ export default function NichoCarousel({ products, onOpen }) {
       onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)} onBlur={() => setPaused(false)}
       onKeyDown={(e) => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); }}>
-      <div className="grid grid-cols-[1fr] gap-4 sm:grid-cols-[1fr_150px]">
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-surface-2">
+      <div className="grid grid-cols-[1fr] gap-3 sm:grid-cols-[1fr_130px] sm:gap-4 xl:grid-cols-[1fr_150px]">
+        <div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-surface-2 sm:aspect-square">
           <AnimatePresence initial={false} custom={dir} mode="popLayout">
             <motion.button key={p.id} custom={dir} variants={variants} initial="enter" animate="center" exit="exit"
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -55,10 +55,10 @@ export default function NichoCarousel({ products, onOpen }) {
         </button>
       </div>
 
-      <div className="mt-5 flex items-end justify-between gap-4">
+      <div className="mt-4 flex items-end justify-between gap-4 sm:mt-5">
         <div aria-live="polite" className="min-w-0">
           <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-muted">Nicho · {p.brand}</p>
-          <p className="mt-1 truncate font-display text-[28px] leading-tight">{p.name}</p>
+          <p className="mt-1 truncate font-display text-[24px] leading-tight sm:text-[28px]">{p.name}</p>
           <p className="num mt-1 text-sm text-muted">5 ml {fmt(p.p5)} · 10 ml {fmt(p.p10)}</p>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -70,7 +70,7 @@ export default function NichoCarousel({ products, onOpen }) {
       <div className="mt-4 flex gap-1.5" role="tablist" aria-label="Elegir perfume">
         {items.map((it, k) => (
           <button key={it.id} role="tab" aria-selected={k === i % n} aria-label={it.name} onClick={() => jump(k)}
-            className="relative h-1 flex-1 overflow-hidden rounded-full bg-line">
+            className="relative h-1 flex-1 overflow-hidden rounded-full bg-line before:absolute before:-inset-y-3 before:inset-x-0 before:content-['']">
             {k === i % n && (
               <motion.span className="absolute inset-y-0 left-0 bg-ink" initial={{ width: reduce || paused ? "100%" : "0%" }}
                 animate={{ width: "100%" }} transition={{ duration: reduce || paused ? 0 : DELAY / 1000, ease: "linear" }} />

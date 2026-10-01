@@ -22,9 +22,9 @@ export function SizeToggle({ p, size, onChange, compact = false }) {
       {opts.map((o) => (
         <button key={o.s} type="button" role="radio" aria-checked={size === o.s} disabled={!o.ok}
           onClick={() => onChange(o.s)}
-          className={`rounded-full px-2 ${compact ? "py-1.5 text-[13px]" : "py-2 text-sm"} font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+          className={`rounded-full px-1.5 ${compact ? "py-2 text-[13px] lg:py-1.5" : "py-2.5 text-sm"} font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
             size === o.s ? "bg-ink text-bg" : "text-muted hover:text-ink"}`}>
-          {o.s} ml <span className="num font-semibold">{o.ok ? fmt(o.price) : "Agotado"}</span>
+          {o.s} ml <span className={`num font-semibold ${compact ? "hidden lg:inline" : ""}`}>{o.ok ? fmt(o.price) : "Agotado"}</span>
         </button>
       ))}
     </div>

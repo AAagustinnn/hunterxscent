@@ -12,14 +12,14 @@ const QA = [
 export default function Faq() {
   const [open, setOpen] = useState(0);
   return (
-    <section id="preguntas" className="scroll-mt-16 border-t border-line py-16 md:py-24">
-      <div className="mx-auto grid max-w-[1320px] gap-10 px-4 md:grid-cols-[0.8fr_1.2fr] md:px-8">
-        <h2 className="font-display text-[40px] leading-[1.05] md:text-[56px]">Preguntas frecuentes</h2>
+    <section id="preguntas" className="scroll-mt-16 border-t border-line py-12 sm:py-16 lg:py-24">
+      <div className="mx-auto grid max-w-[1320px] gap-6 px-4 md:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-10">
+        <h2 className="font-display text-[34px] leading-[1.05] sm:text-[40px] lg:text-[56px]">Preguntas frecuentes</h2>
         <div>
           {QA.map(([q, a], i) => (
             <div key={q} className="border-b border-line">
               <button id={`faq-${i}`} aria-expanded={open === i} aria-controls={`faq-p-${i}`} onClick={() => setOpen(open === i ? -1 : i)}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left text-lg font-medium">
+                className="flex w-full items-center justify-between gap-4 py-4 text-left text-[17px] font-medium sm:py-5 sm:text-lg">
                 {q}<Plus size={20} className={`shrink-0 transition ${open === i ? "rotate-45" : ""}`} />
               </button>
               <AnimatePresence initial={false}>

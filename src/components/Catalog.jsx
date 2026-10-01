@@ -10,21 +10,22 @@ export function Card({ p, onOpen, notify }) {
   const [size, setSize] = useState(firstSize(p));
   const soldOut = size === null;
   return (
-    <article className="group flex flex-col">
+    <article className="group flex w-full min-w-0 flex-col">
       <button onClick={() => onOpen(p.id)} className="relative block overflow-hidden rounded-2xl bg-surface-2" aria-label={`Ver notas de ${p.brand} ${p.name}`}>
         <img src={SHOT[p.id]} alt={`${p.brand} ${p.name}`} loading="lazy" width="900" height="900"
           className={`aspect-square w-full object-cover transition duration-700 group-hover:scale-[1.035] ${soldOut ? "grayscale" : ""}`} />
       </button>
-      <div className="mt-4 flex items-start justify-between gap-3">
+      <div className="mt-3 flex flex-1 flex-col gap-1 sm:mt-4 lg:flex-row lg:items-start lg:justify-between lg:gap-3">
         <div className="min-w-0">
-          <p className="text-[12px] font-medium uppercase tracking-[0.12em] text-muted">{p.brand}</p>
-          <h3 className="mt-1 font-display text-[22px] leading-tight">{p.name}</h3>
-          <p className="mt-1 text-[13px] text-muted">{p.cat} · {p.fams.join(", ")}</p>
+          <p className="truncate text-[11px] font-medium uppercase tracking-[0.1em] text-muted lg:text-[12px] lg:tracking-[0.12em]">{p.brand}</p>
+          <h3 className="mt-0.5 font-display text-[17px] leading-tight sm:text-[19px] lg:mt-1 lg:text-[22px]">{p.name}</h3>
+          <p className="mt-1 hidden text-[13px] text-muted lg:block">{p.cat} · {p.fams.join(", ")}</p>
         </div>
-        <p className="num shrink-0 pt-5 text-sm text-muted">desde <span className="font-semibold text-ink">{fmt(Math.min(p.p5, p.p10))}</span></p>
+        <p className="num mt-auto shrink-0 text-[15px] font-semibold lg:hidden">{soldOut ? "Agotado" : fmt(size === 5 ? p.p5 : p.p10)}</p>
+        <p className="num hidden shrink-0 pt-5 text-sm text-muted lg:block">desde <span className="font-semibold text-ink">{fmt(Math.min(p.p5, p.p10))}</span></p>
       </div>
-      <div className="mt-3 flex items-center gap-2">
-        <div className="flex-1">{soldOut ? <p className="rounded-full border border-line py-2 text-center text-sm text-muted">Agotado por ahora</p>
+      <div className="mt-2.5 flex items-center gap-1.5 sm:mt-3 sm:gap-2">
+        <div className="min-w-0 flex-1">{soldOut ? <p className="truncate rounded-full border border-line px-2 py-2 text-center text-[13px] text-muted sm:text-sm">Agotado</p>
           : <SizeToggle p={p} size={size} onChange={setSize} compact />}</div>
         <button disabled={soldOut} onClick={() => { add(p.id, size); notify(`${p.name} ${size} ml agregado al pedido`); }}
           aria-label={`Agregar ${p.name} ${size || ""} ml al pedido`}
@@ -48,17 +49,17 @@ function Skeleton() {
 }
 
 const SECTIONS = [
-  { cat: "Nicho", id: "nicho", title: "Nicho", text: "Casas de perfumería independiente como Xerjoff, Lorenzo Pazzaglia, Louis Vuitton y Tom Ford.", cols: "sm:grid-cols-2 lg:grid-cols-3", tint: false },
-  { cat: "Diseñador", id: "disenador", title: "Diseñador", text: "Los clásicos de las grandes marcas, para usar todos los días o para salir.", cols: "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", tint: false },
-  { cat: "Árabe", id: "arabe", title: "Árabes y de inspiración", text: "Gran rendimiento y estela a un precio accesible.", cols: "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", tint: true },
+  { cat: "Nicho", id: "nicho", title: "Nicho", text: "Casas de perfumería independiente como Xerjoff, Lorenzo Pazzaglia, Louis Vuitton y Tom Ford.", cols: "md:grid-cols-3", tint: false },
+  { cat: "Diseñador", id: "disenador", title: "Diseñador", text: "Los clásicos de las grandes marcas, para usar todos los días o para salir.", cols: "md:grid-cols-3 xl:grid-cols-4", tint: false },
+  { cat: "Árabe", id: "arabe", title: "Árabes y de inspiración", text: "Gran rendimiento y estela a un precio accesible.", cols: "md:grid-cols-3 xl:grid-cols-4", tint: true },
 ];
 
 function Grid({ list, cols, onOpen, notify, reduce }) {
   return (
-    <div className={`mt-10 grid grid-cols-1 gap-x-6 gap-y-12 ${cols}`}>
+    <div className={`mt-7 grid grid-cols-2 gap-x-3 gap-y-8 sm:mt-10 sm:gap-x-6 sm:gap-y-12 ${cols}`}>
       <AnimatePresence mode="popLayout">
         {list.map((p) => (
-          <motion.div key={p.id} layout={!reduce} initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          <motion.div key={p.id} className="flex" layout={!reduce} initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}>
             <Card p={p} onOpen={onOpen} notify={notify} />
           </motion.div>
@@ -82,7 +83,7 @@ export default function Catalog({ products, loading, onOpen, notify }) {
   }, [products, fams, q, sort]);
   const toggleFam = (f) => setFams((s) => (s.includes(f) ? s.filter((x) => x !== f) : [...s, f]));
   const reset = () => { setFams([]); setQ(""); };
-  const chip = (on) => `shrink-0 rounded-full border px-4 py-2 text-[13.5px] font-medium transition ${on ? "border-ink bg-ink text-bg" : "border-line bg-surface text-muted hover:text-ink"}`;
+  const chip = (on) => `shrink-0 rounded-full border px-4 py-2.5 sm:py-2 text-[13.5px] font-medium transition ${on ? "border-ink bg-ink text-bg" : "border-line bg-surface text-muted hover:text-ink"}`;
   const counts = Object.fromEntries(SECTIONS.map((s) => [s.cat, filtered.filter((p) => p.cat === s.cat).length]));
 
   return (
@@ -95,12 +96,12 @@ export default function Catalog({ products, loading, onOpen, notify }) {
               <span className="sr-only">Buscar</span>
               <input id="buscar" value={q} onChange={(e) => setQ(e.target.value)} type="search"
                 placeholder="Busca perfume, marca o nota"
-                className="w-full bg-transparent py-2.5 text-[15px] text-ink outline-none placeholder:text-muted" />
+                className="w-full min-w-0 bg-transparent py-2.5 text-base text-ink outline-none placeholder:text-muted sm:text-[15px]" />
               {q && <button onClick={() => setQ("")} aria-label="Borrar búsqueda" className="text-muted"><X size={16} /></button>}
             </label>
             <label className="shrink-0">
               <span className="sr-only">Ordenar</span>
-              <select id="orden" value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-full border border-line bg-surface px-3 py-2.5 text-sm font-medium text-ink">
+              <select id="orden" value={sort} onChange={(e) => setSort(e.target.value)} className="h-[46px] rounded-full border border-line bg-surface px-3 text-base font-medium text-ink sm:text-sm">
                 <option value="rel">Destacados</option><option value="asc">Precio menor</option><option value="desc">Precio mayor</option>
               </select>
             </label>
@@ -108,7 +109,7 @@ export default function Catalog({ products, loading, onOpen, notify }) {
           <div className="no-scrollbar mt-3 flex items-center gap-2 overflow-x-auto">
             <nav aria-label="Colecciones" className="flex shrink-0 gap-2">
               {SECTIONS.map((s) => (
-                <a key={s.id} href={`#${s.id}`} className="num shrink-0 rounded-full border border-ink/30 px-4 py-2 text-[13.5px] font-semibold text-ink transition hover:border-ink">{s.cat} <span className="font-normal text-muted">{counts[s.cat]}</span></a>
+                <a key={s.id} href={`#${s.id}`} className="num shrink-0 rounded-full border border-ink/30 px-4 py-2.5 sm:py-2 text-[13.5px] font-semibold text-ink transition hover:border-ink">{s.cat} <span className="font-normal text-muted">{counts[s.cat]}</span></a>
               ))}
             </nav>
             <span aria-hidden="true" className="mx-1 h-6 w-px shrink-0 bg-line" />
@@ -118,7 +119,7 @@ export default function Catalog({ products, loading, onOpen, notify }) {
       </div>
 
       {loading && products.length === 0 ? (
-        <div className="mx-auto grid max-w-[1320px] grid-cols-1 gap-6 px-4 py-16 sm:grid-cols-2 lg:grid-cols-4 md:px-8">{Array.from({ length: 8 }).map((_, k) => <Skeleton key={k} />)}</div>
+        <div className="mx-auto grid max-w-[1320px] grid-cols-2 gap-x-3 gap-y-8 px-4 py-12 sm:gap-6 md:grid-cols-3 md:px-8 xl:grid-cols-4">{Array.from({ length: 8 }).map((_, k) => <Skeleton key={k} />)}</div>
       ) : filtered.length === 0 ? (
         <div className="mx-auto max-w-[1320px] px-4 py-16 md:px-8">
           <div className="rounded-2xl border border-dashed border-line px-6 py-16 text-center">
@@ -131,11 +132,11 @@ export default function Catalog({ products, loading, onOpen, notify }) {
         const list = filtered.filter((p) => p.cat === s.cat);
         if (!list.length) return null;
         return (
-          <section key={s.id} id={s.id} aria-labelledby={`h-${s.id}`} className={`scroll-mt-40 py-16 md:py-20 ${s.tint ? "bg-surface-2" : ""}`}>
+          <section key={s.id} id={s.id} aria-labelledby={`h-${s.id}`} className={`scroll-mt-40 py-11 sm:py-16 md:py-20 ${s.tint ? "bg-surface-2" : ""}`}>
             <div className="mx-auto max-w-[1320px] px-4 md:px-8">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <h2 id={`h-${s.id}`} className="font-display text-[40px] leading-none md:text-[56px]">{s.title}</h2>
+                  <h2 id={`h-${s.id}`} className="font-display text-[36px] leading-none sm:text-[40px] md:text-[56px]">{s.title}</h2>
                   <p className="mt-3 max-w-[52ch] text-muted">{s.text}</p>
                 </div>
                 <p className="num text-sm text-muted">{list.length} {list.length === 1 ? "perfume" : "perfumes"}</p>

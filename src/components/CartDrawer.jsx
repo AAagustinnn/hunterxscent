@@ -45,7 +45,7 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
               <button ref={closeRef} onClick={onClose} aria-label="Cerrar" className="grid h-10 w-10 place-items-center rounded-full border border-line"><X size={18} /></button>
             </div>
 
-            <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4">
+            <div className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-5 py-4">
               {!lines.length ? (
                 <div className="rounded-2xl border border-dashed border-line px-5 py-12 text-center">
                   <p className="font-display text-2xl">Tu pedido está vacío</p>
@@ -53,34 +53,38 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
                   <a href="#catalogo" onClick={onClose} className="mt-5 inline-block rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-bg">Ir al catálogo</a>
                 </div>
               ) : lines.map((l) => (
-                <div key={l.key} className="grid grid-cols-[64px_1fr_auto] items-center gap-3 rounded-2xl bg-bg p-2 pr-3">
-                  <img src={SHOT[l.id]} alt="" className="h-16 w-16 rounded-xl object-cover" />
+                <div key={l.key} className="grid grid-cols-[56px_1fr_auto] items-center gap-2.5 rounded-2xl bg-bg p-2 pr-2 sm:grid-cols-[64px_1fr_auto] sm:gap-3 sm:pr-3">
+                  <img src={SHOT[l.id]} alt="" className="h-14 w-14 rounded-xl object-cover sm:h-16 sm:w-16" />
                   <div className="min-w-0">
                     <p className="truncate font-medium">{l.p.name}</p>
                     <p className="num text-[13px] text-muted">{l.size} ml · {fmt(l.price)}</p>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <button onClick={() => dec(l.id, l.size)} aria-label="Quitar uno" className="grid h-8 w-8 place-items-center rounded-full border border-line"><Minus size={14} /></button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => dec(l.id, l.size)} aria-label="Quitar uno" className="grid h-9 w-9 place-items-center rounded-full border border-line"><Minus size={14} /></button>
                     <span className="num w-5 text-center text-sm font-semibold">{l.qty}</span>
-                    <button onClick={() => add(l.id, l.size)} aria-label="Agregar uno" className="grid h-8 w-8 place-items-center rounded-full border border-line"><Plus size={14} /></button>
-                    <button onClick={() => remove(l.id, l.size)} aria-label={`Eliminar ${l.p.name}`} className="ml-1 grid h-8 w-8 place-items-center rounded-full text-muted hover:text-danger"><Trash size={16} /></button>
+                    <button onClick={() => add(l.id, l.size)} aria-label="Agregar uno" className="grid h-9 w-9 place-items-center rounded-full border border-line"><Plus size={14} /></button>
+                    <button onClick={() => remove(l.id, l.size)} aria-label={`Eliminar ${l.p.name}`} className="grid h-9 w-9 place-items-center rounded-full text-muted hover:text-danger"><Trash size={16} /></button>
                   </div>
                 </div>
               ))}
-            </div>
-
-            {lines.length > 0 && (
-              <div className="space-y-3 border-t border-line px-5 py-4">
-                <div className="flex items-baseline justify-between"><span className="text-muted">Total sin envío</span><span className="num text-xl font-semibold">{fmt(total)}</span></div>
+              {lines.length > 0 && (
+                <div className="space-y-3 pt-2">
                 <div className="grid grid-cols-2 gap-2">
                   <div className="grid gap-1.5"><label htmlFor="c-name" className="text-xs font-medium text-muted">Tu nombre (opcional)</label>
-                    <input id="c-name" value={name} onChange={(e) => setName(e.target.value)} className="rounded-xl border border-line bg-bg px-3 py-2 text-sm text-ink outline-none focus:border-accent" /></div>
+                    <input id="c-name" value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 rounded-xl border border-line bg-bg px-3 py-2.5 text-base text-ink sm:text-sm outline-none focus:border-accent" /></div>
                   <div className="grid gap-1.5"><label htmlFor="c-city" className="text-xs font-medium text-muted">Comuna (opcional)</label>
-                    <input id="c-city" value={city} onChange={(e) => setCity(e.target.value)} className="rounded-xl border border-line bg-bg px-3 py-2 text-sm text-ink outline-none focus:border-accent" /></div>
+                    <input id="c-city" value={city} onChange={(e) => setCity(e.target.value)} className="min-w-0 rounded-xl border border-line bg-bg px-3 py-2.5 text-base text-ink sm:text-sm outline-none focus:border-accent" /></div>
                 </div>
                 <label htmlFor="c-msg" className="sr-only">Mensaje del pedido</label>
                 <textarea id="c-msg" ref={textRef} readOnly value={message} rows={4}
                   className="w-full resize-none rounded-xl border border-line bg-bg p-3 font-mono text-[12.5px] leading-relaxed text-ink" />
+                </div>
+              )}
+            </div>
+
+            {lines.length > 0 && (
+              <div className="space-y-2.5 border-t border-line px-5 py-4">
+                <div className="flex items-baseline justify-between"><span className="text-muted">Total sin envío</span><span className="num text-xl font-semibold">{fmt(total)}</span></div>
                 <button onClick={copy} className="flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-semibold text-accent-ink transition active:scale-[0.98]"><Copy size={18} />Copiar pedido</button>
                 <a href={`https://ig.me/m/${instagram}`} target="_blank" rel="noopener" className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-3.5 font-semibold transition hover:border-ink"><InstagramLogo size={18} />Abrir chat con @{instagram}</a>
                 <button onClick={clear} className="w-full text-center text-xs text-muted underline-offset-2 hover:underline">Vaciar pedido</button>

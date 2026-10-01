@@ -26,10 +26,10 @@ export default function Advisor({ products, onOpen }) {
     .sort((x, y) => y[0] - x[0]).slice(0, 3).map((x) => x[1]), [products, a]);
 
   return (
-    <section id="asesor" className="scroll-mt-16 bg-surface-2 py-16 md:py-24">
-      <div className="mx-auto grid max-w-[1320px] gap-10 px-4 md:grid-cols-[0.9fr_1.1fr] md:px-8">
+    <section id="asesor" className="scroll-mt-16 bg-surface-2 py-12 sm:py-16 lg:py-24">
+      <div className="mx-auto grid max-w-[1320px] gap-8 px-4 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
         <Reveal>
-          <h2 className="font-display text-[40px] leading-[1.05] md:text-[56px]">¿No sabes cuál elegir?</h2>
+          <h2 className="font-display text-[34px] leading-[1.05] sm:text-[40px] lg:text-[56px]">¿No sabes cuál elegir?</h2>
           <p className="mt-4 max-w-[42ch] text-muted">Responde tres preguntas y te mostramos los tres decants que más calzan contigo.</p>
           <div className="mt-8 space-y-6">
             {QS.map((q) => (
@@ -38,7 +38,7 @@ export default function Advisor({ products, onOpen }) {
                 <div className="flex flex-wrap gap-2">
                   {q.opts.map(([v, l]) => (
                     <button key={v || "x"} onClick={() => setA((s) => ({ ...s, [q.key]: v }))} aria-pressed={a[q.key] === v}
-                      className={`rounded-full border px-4 py-2 text-[13.5px] font-medium transition ${a[q.key] === v ? "border-ink bg-ink text-bg" : "border-line bg-surface text-muted hover:text-ink"}`}>{l}</button>
+                      className={`rounded-full border px-4 py-2.5 text-[14px] font-medium transition ${a[q.key] === v ? "border-ink bg-ink text-bg" : "border-line bg-surface text-muted hover:text-ink"}`}>{l}</button>
                   ))}
                 </div>
               </fieldset>
@@ -55,7 +55,7 @@ export default function Advisor({ products, onOpen }) {
                 <img src={SHOT[p.id]} alt="" className={`h-full w-full object-cover ${i === 0 ? "aspect-square sm:aspect-auto" : "aspect-square"}`} />
                 <div className={`pr-5 ${i === 0 ? "px-5 pb-5 sm:px-0 sm:py-6" : "py-4"}`}>
                   {i === 0 && <p className="mb-1 text-sm font-medium text-accent">Tu mejor opción</p>}
-                  <p className={`font-display leading-tight ${i === 0 ? "text-[32px]" : "text-[22px]"}`}>{p.name}</p>
+                  <p className={`font-display leading-tight ${i === 0 ? "text-[28px] sm:text-[32px]" : "text-[20px] sm:text-[22px]"}`}>{p.name}</p>
                   <p className="mt-1 text-sm text-muted">{p.brand} · {p.fams.join(", ")}</p>
                   <p className="num mt-3 inline-flex items-center gap-2 text-sm font-semibold">10 ml {fmt(p.p10)}<ArrowRight size={16} className="transition group-hover:translate-x-1" /></p>
                 </div>

@@ -3,12 +3,12 @@ import { InstagramLogo } from "@phosphor-icons/react";
 export default function Footer({ instagram }) {
   return (
     <footer className="bg-ink text-bg">
-      <div className="mx-auto grid max-w-[1320px] gap-8 px-4 py-12 md:grid-cols-[1.4fr_1fr_1fr] md:px-8">
+      <div className="mx-auto grid max-w-[1320px] gap-8 px-4 py-10 sm:grid-cols-2 sm:py-12 md:px-8 lg:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <p className="font-display text-[28px] tracking-[0.08em]">HUNTER <span className="italic">x</span> SCENT</p>
           <p className="mt-3 max-w-[40ch] text-sm opacity-70">Decants de perfumes originales de diseñador, nicho y árabes, en 5 y 10 ml.</p>
         </div>
-        <nav aria-label="Pie de página" className="grid content-start gap-2 text-sm">
+        <nav aria-label="Pie de página" className="grid grid-cols-2 content-start gap-x-6 gap-y-3 text-sm lg:grid-cols-1 lg:gap-y-2">
           <a href="#nicho" className="opacity-80 hover:opacity-100">Nicho</a>
           <a href="#disenador" className="opacity-80 hover:opacity-100">Diseñador</a>
           <a href="#arabe" className="opacity-80 hover:opacity-100">Árabe</a>
