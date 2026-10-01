@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "@fontsource/bodoni-moda/500.css";
+@import "@fontsource/bodoni-moda/600.css";
+@import "@fontsource/bodoni-moda/500-italic.css";
+@import "@fontsource-variable/geist";
+
+/* Paleta: monocromo frío + un solo acento cobalto. Las fotos de producto aportan el color. */
+:root {
+  --bg: #f1f1ef;
+  --surface: #fafaf8;
+  --surface-2: #e6e6e3;
+  --ink: #131314;
+  --muted: #5d5f63;
+  --line: #d6d6d2;
+  --accent: #2340a8;
+  --accent-ink: #f7f8fc;
+  --accent-soft: #e2e7f7;
+  --danger: #a3312b;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111112; --surface: #19191b; --surface-2: #222225; --ink: #ecece9; --muted: #a2a3a8;
+    --line: #2f2f33; --accent: #8fa6ff; --accent-ink: #0e1020; --accent-soft: #1d2340; --danger: #ff8f86;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111112; --surface: #19191b; --surface-2: #222225; --ink: #ecece9; --muted: #a2a3a8;
+  --line: #2f2f33; --accent: #8fa6ff; --accent-ink: #0e1020; --accent-soft: #1d2340; --danger: #ff8f86;
+  color-scheme: dark;
+}
+
+@theme {
+  --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --font-sans: "Geist Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { text-wrap: balance; }
+.num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
