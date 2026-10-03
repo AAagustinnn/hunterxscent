@@ -4,11 +4,22 @@ import { X, Minus, Plus, Copy, InstagramLogo, Trash } from "@phosphor-icons/reac
 import { SHOT, fmt } from "../lib/catalog.js";
 import { useCart } from "../lib/cart.jsx";
 
+const FIELDS = [
+  { k: "nombre", label: "Nombre y apellido", auto: "name" },
+  { k: "rut", label: "RUT", ph: "12.345.678-9" },
+  { k: "telefono", label: "Número de teléfono", type: "tel", auto: "tel", mode: "tel", ph: "+56 9 ..." },
+  { k: "correo", label: "Correo", type: "email", auto: "email", mode: "email" },
+  { k: "sucursal", label: "Sucursal de Starken" },
+  { k: "comuna", label: "Comuna", auto: "address-level2" },
+];
+
 export default function CartDrawer({ open, onClose, instagram, notify }) {
   const reduce = useReducedMotion();
   const { lines, total, add, dec, remove, clear } = useCart();
-  const [name, setName] = useState("");
-  const [city, setCity] = useState("");
+  const [mode, setMode] = useState(""); // "envio" | "presencial"
+  const [d, setD] = useState({ nombre: "", rut: "", telefono: "", correo: "", sucursal: "", comuna: "" });
+  const [error, setError] = useState("");
+  const set = (k) => (e) => { setD((v) => ({ ...v, [k]: e.target.value })); setError(""); };
   const textRef = useRef(null);
   const closeRef = useRef(null);
   useEffect(() => {
@@ -22,11 +33,21 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
   const message = useMemo(() => {
     if (!lines.length) return "";
     const rows = lines.map((l) => `- ${l.qty} x ${l.p.brand} ${l.p.name} ${l.size} ml (${fmt(l.subtotal)})`);
-    const who = [name && `Nombre: ${name}`, city && `Comuna: ${city}`].filter(Boolean);
-    return [`Hola HUNTER X SCENT, quiero hacer este pedido:`, ...rows, `Total: ${fmt(total)} (sin envío)`, ...who].join("\n");
-  }, [lines, total, name, city]);
+    const out = [`Hola HUNTER X SCENT, quiero hacer este pedido:`, ...rows, `Total: ${fmt(total)} (sin envío)`];
+    if (mode === "envio") {
+      out.push("", "Entrega: Envío por Starken", "Datos para el envío", ...FIELDS.map((f) => `${f.label}: ${d[f.k].trim()}`));
+    } else if (mode === "presencial") {
+      out.push("", "Entrega: Presencial");
+    }
+    return out.join("\n");
+  }, [lines, total, mode, d]);
 
   const copy = async () => {
+    if (!mode) { setError("Elige si quieres envío o entrega presencial."); return; }
+    if (mode === "envio") {
+      const missing = FIELDS.filter((f) => !d[f.k].trim()).map((f) => f.label);
+      if (missing.length) { setError(`Para el envío falta: ${missing.join(", ")}.`); return; }
+    }
     try { await navigator.clipboard.writeText(message); notify("Pedido copiado. Pégalo en el chat de Instagram"); }
     catch (e) { textRef.current?.focus(); textRef.current?.select(); notify("Selecciona el texto y cópialo"); }
   };
@@ -69,14 +90,31 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
               ))}
               {lines.length > 0 && (
                 <div className="space-y-3 pt-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="grid gap-1.5"><label htmlFor="c-name" className="text-xs font-medium text-muted">Tu nombre (opcional)</label>
-                    <input id="c-name" value={name} onChange={(e) => setName(e.target.value)} className="min-w-0 rounded-xl border border-line bg-bg px-3 py-2.5 text-base text-ink sm:text-sm outline-none focus:border-accent" /></div>
-                  <div className="grid gap-1.5"><label htmlFor="c-city" className="text-xs font-medium text-muted">Comuna (opcional)</label>
-                    <input id="c-city" value={city} onChange={(e) => setCity(e.target.value)} className="min-w-0 rounded-xl border border-line bg-bg px-3 py-2.5 text-base text-ink sm:text-sm outline-none focus:border-accent" /></div>
-                </div>
+                <fieldset>
+                  <legend className="mb-2 text-sm font-semibold">¿Cómo quieres recibirlo?</legend>
+                  <div role="radiogroup" className="grid grid-cols-2 gap-1 rounded-full border border-line bg-bg p-1">
+                    {[["envio", "Envío por Starken"], ["presencial", "Presencial"]].map(([v, l]) => (
+                      <button key={v} type="button" role="radio" aria-checked={mode === v} onClick={() => { setMode(v); setError(""); }}
+                        className={`rounded-full px-2 py-2.5 text-sm font-medium transition-colors ${mode === v ? "bg-ink text-bg" : "text-muted hover:text-ink"}`}>{l}</button>
+                    ))}
+                  </div>
+                </fieldset>
+                {mode === "envio" && (
+                  <div className="space-y-2.5">
+                    <p className="text-sm font-semibold">Datos para el envío</p>
+                    {FIELDS.map((f) => (
+                      <div key={f.k} className="grid gap-1.5">
+                        <label htmlFor={`c-${f.k}`} className="text-xs font-medium text-muted">{f.label}</label>
+                        <input id={`c-${f.k}`} value={d[f.k]} onChange={set(f.k)} type={f.type || "text"} inputMode={f.mode} autoComplete={f.auto || "off"} placeholder={f.ph}
+                          className="min-w-0 rounded-xl border border-line bg-bg px-3 py-2.5 text-base text-ink outline-none placeholder:text-muted/60 focus:border-accent sm:text-sm" />
+                      </div>
+                    ))}
+                    <p className="text-xs text-muted">El costo del envío se paga aparte y lo coordinamos por Instagram.</p>
+                  </div>
+                )}
+                {mode === "presencial" && <p className="rounded-xl bg-bg px-3 py-2.5 text-sm text-muted">Coordinamos el lugar y la hora de entrega por el chat de Instagram.</p>}
                 <label htmlFor="c-msg" className="sr-only">Mensaje del pedido</label>
-                <textarea id="c-msg" ref={textRef} readOnly value={message} rows={4}
+                <textarea id="c-msg" ref={textRef} readOnly value={message} rows={5}
                   className="w-full resize-none rounded-xl border border-line bg-bg p-3 font-mono text-[12.5px] leading-relaxed text-ink" />
                 </div>
               )}
@@ -85,6 +123,7 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
             {lines.length > 0 && (
               <div className="space-y-2.5 border-t border-line px-5 py-4">
                 <div className="flex items-baseline justify-between"><span className="text-muted">Total sin envío</span><span className="num text-xl font-semibold">{fmt(total)}</span></div>
+                {error && <p role="alert" className="text-sm text-danger">{error}</p>}
                 <button onClick={copy} className="flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-semibold text-accent-ink transition active:scale-[0.98]"><Copy size={18} />Copiar pedido</button>
                 <a href={`https://ig.me/m/${instagram}`} target="_blank" rel="noopener" className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-3.5 font-semibold transition hover:border-ink"><InstagramLogo size={18} />Abrir chat con @{instagram}</a>
                 <button onClick={clear} className="w-full text-center text-xs text-muted underline-offset-2 hover:underline">Vaciar pedido</button>
