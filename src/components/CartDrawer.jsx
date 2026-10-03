@@ -42,12 +42,36 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
     return out.join("\n");
   }, [lines, total, mode, d]);
 
-  const copy = async () => {
-    if (!mode) { setError("Elige si quieres envío o entrega presencial."); return; }
+  const valid = () => {
+    if (!mode) { setError("Elige si quieres envío o entrega presencial."); return false; }
     if (mode === "envio") {
       const missing = FIELDS.filter((f) => !d[f.k].trim()).map((f) => f.label);
-      if (missing.length) { setError(`Para el envío falta: ${missing.join(", ")}.`); return; }
+      if (missing.length) { setError(`Para el envío falta: ${missing.join(", ")}.`); return false; }
     }
+    return true;
+  };
+
+  // Abre la app de Instagram en el celular (el enlace web se queda en el navegador y falla).
+  // Si la app no responde, cae al enlace web del chat.
+  const openInstagram = async (e) => {
+    e.preventDefault();
+    if (!valid()) return;
+    try { await navigator.clipboard.writeText(message); notify("Pedido copiado. Toca Mensaje y pégalo"); } catch (err) { /* se copia a mano */ }
+    const web = `https://ig.me/m/${instagram}`;
+    const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!mobile) { window.open(web, "_blank", "noopener"); return; }
+    let left = false;
+    const onHide = () => { if (document.hidden) left = true; };
+    document.addEventListener("visibilitychange", onHide);
+    window.location.href = `instagram://user?username=${instagram}`;
+    setTimeout(() => {
+      document.removeEventListener("visibilitychange", onHide);
+      if (!left && !document.hidden) window.location.href = web;
+    }, 1500);
+  };
+
+  const copy = async () => {
+    if (!valid()) return;
     try { await navigator.clipboard.writeText(message); notify("Pedido copiado. Pégalo en el chat de Instagram"); }
     catch (e) { textRef.current?.focus(); textRef.current?.select(); notify("Selecciona el texto y cópialo"); }
   };
@@ -125,7 +149,8 @@ export default function CartDrawer({ open, onClose, instagram, notify }) {
                 <div className="flex items-baseline justify-between"><span className="text-muted">Total sin envío</span><span className="num text-xl font-semibold">{fmt(total)}</span></div>
                 {error && <p role="alert" className="text-sm text-danger">{error}</p>}
                 <button onClick={copy} className="flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3.5 font-semibold text-accent-ink transition active:scale-[0.98]"><Copy size={18} />Copiar pedido</button>
-                <a href={`https://ig.me/m/${instagram}`} target="_blank" rel="noopener" className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-3.5 font-semibold transition hover:border-ink"><InstagramLogo size={18} />Abrir chat con @{instagram}</a>
+                <a href={`https://ig.me/m/${instagram}`} onClick={openInstagram} target="_blank" rel="noopener" className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-3.5 font-semibold transition hover:border-ink"><InstagramLogo size={18} />Copiar y abrir Instagram</a>
+                <p className="text-center text-xs text-muted">Se abre @{instagram}. Toca <b className="font-semibold">Mensaje</b> y pega el pedido.</p>
                 <button onClick={clear} className="w-full text-center text-xs text-muted underline-offset-2 hover:underline">Vaciar pedido</button>
               </div>
             )}
